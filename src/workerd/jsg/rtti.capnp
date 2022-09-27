@@ -56,6 +56,9 @@ struct Type {
 
     function @14 :FunctionType;
     # jsg::Function
+
+    jsgImpl @15 :JsgImplType;
+    # jsg implementation type
   }
 }
 
@@ -123,26 +126,8 @@ struct BuiltinType {
     kjDate @3;
     # kj::Date
 
-    jsgUnimplemented @4;
-    # jsg::Unimplemented
-
-    v8Isolate @5;
-    # v8::Isolate
-
-    jsgVarargs @6;
-    # jsg::Varargs;
-
-    v8Function @7;
+    v8Function @4;
     # v8::Function
-
-    flags @8;
-    # CompatibilityFlags::Reader
-
-    jsgLock @9;
-    # jsg::Lock
-
-    jsgTypeHandler @10;
-    # jsg::TypeHandler
   }
 
   type @0 :Type;
@@ -154,6 +139,32 @@ struct FunctionType {
   returnType @0 :Type;
 
   args @1 :List(Type);
+}
+
+struct JsgImplType {
+  # one of the internal jsg types that are not exposed directly but handled specially
+
+  enum Type {
+    v8Isolate @0;
+    # v8::Isolate
+
+    flags @1;
+    # Configuration flags
+
+    jsgLock @2;
+    # jsg::Lock
+
+    jsgTypeHandler @3;
+    # jsg::TypeHandler
+
+    jsgUnimplemented @4;
+    # jsg::Unimplemented
+
+    jsgVarargs @5;
+    # jsg::Varargs;
+  }
+
+  type @0 :Type;
 }
 
 struct Structure {

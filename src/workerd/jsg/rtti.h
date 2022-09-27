@@ -296,13 +296,9 @@ struct BuildRtti<T> { \
 
 #define FOR_EACH_BUILTIN_TYPE(F, ...) \
   F(jsg::BufferSource, BuiltinType::Type::JSG_BUFFER_SOURCE) \
-  F(jsg::Lock, BuiltinType::Type::JSG_LOCK) \
-  F(jsg::Unimplemented, BuiltinType::Type::JSG_UNIMPLEMENTED) \
-  F(jsg::Varargs, BuiltinType::Type::JSG_VARARGS) \
   F(kj::Date, BuiltinType::Type::KJ_DATE) \
   F(v8::ArrayBufferView, BuiltinType::Type::V8_ARRAY_BUFFER_VIEW) \
   F(v8::Function, BuiltinType::Type::V8_FUNCTION) \
-  F(v8::Isolate*, BuiltinType::Type::V8_ISOLATE) \
   F(v8::Uint8Array, BuiltinType::Type::V8_UINT8_ARRAY)
 
 FOR_EACH_BUILTIN_TYPE(DECLARE_BUILTIN_TYPE)
@@ -310,12 +306,33 @@ FOR_EACH_BUILTIN_TYPE(DECLARE_BUILTIN_TYPE)
 #undef FOR_EACH_BUILTIN_TYPE
 #undef DECLARE_BUILTIN_TYPE
 
+// Jsg implementation types
+
+#define DECLARE_JSG_IMPL_TYPE(T, V) \
+template<> \
+struct BuildRtti<T> { \
+  static void build(Type::Builder builder) { \
+    builder.initJsgImpl().setType(V); \
+  } \
+};
+
+#define FOR_EACH_JSG_IMPL_TYPE(F, ...) \
+  F(jsg::Lock, JsgImplType::Type::JSG_LOCK) \
+  F(jsg::Unimplemented, JsgImplType::Type::JSG_UNIMPLEMENTED) \
+  F(jsg::Varargs, JsgImplType::Type::JSG_VARARGS) \
+  F(v8::Isolate*, JsgImplType::Type::V8_ISOLATE)
+
+FOR_EACH_JSG_IMPL_TYPE(DECLARE_JSG_IMPL_TYPE)
+
+#undef FOR_EACH_JSG_IMPL_TYPE
+#undef DECLARE_JSG_IMPL_TYPE
+
 #define JSG_RTTI_DECLARE_CONFIGURATION_TYPE(T) \
   namespace workerd::jsg::rtti::impl { \
     template<> \
     struct BuildRtti<T> { \
       static void build(Type::Builder builder) { \
-        builder.initBuiltin().setType(BuiltinType::Type::FLAGS); \
+        builder.initJsgImpl().setType(JsgImplType::Type::FLAGS); \
       } \
     }; \
   }
@@ -329,7 +346,7 @@ FOR_EACH_BUILTIN_TYPE(DECLARE_BUILTIN_TYPE)
 template<typename T>
 struct BuildRtti<jsg::TypeHandler<T>> {
   static void build(Type::Builder builder) {
-    builder.initBuiltin().setType(BuiltinType::Type::JSG_TYPE_HANDLER);
+    builder.initJsgImpl().setType(JsgImplType::Type::JSG_TYPE_HANDLER);
   }
 };
 
