@@ -2189,6 +2189,11 @@ private:
 
       int GetChunkSize() override {
         return 65536;  // big chunks == faster
+        // The chunk size here will determine the actual number of individual
+        // messages that are sent. The default is... rather small. Experience
+        // node and node-heapdump shows that this can be bumped up
+        // much higher to get better performance. Here we use the value
+        // that Node.js uses (see Node.js' FileOutputStream impl).
       }
 
       v8::OutputStream::WriteResult WriteAsciiChunk(char* data, int size) override {
